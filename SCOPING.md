@@ -45,3 +45,29 @@ Whether the portfolio piece centers on the statistical finding (write-up + key c
 - Check Oyez API/data access specifics (bulk download vs. scraping, rate limits, licensing)
 - Decide number of terms/cases to pull given the small-n constraint
 - Pick baseline replication target (which published question-hostility result to replicate first)
+
+## ML lifecycle checklist
+
+Added 2026-11-14. The user's stated goal for this project shifted during scoping: beyond the portfolio piece itself, this is meant to be a first hands-on ML system build end-to-end, as practice for an intermediate-level developer who has not built one solo before. The checklist below exists to make sure each lifecycle stage gets a deliberate answer — worked through one at a time, with reasoning explained at each step rather than assumed as prior knowledge — instead of skipped past on the way to modeling.
+
+Work stage by stage. Before moving to the next stage, write down the decision made and why (a couple sentences is enough), and sanity-check it before proceeding.
+
+1. **Problem framing** — What exactly is being predicted (case outcome? per-advocate win?), and what does "win" mean for ambiguous cases (vacated/remanded, mixed rulings)? *Mistake if skipped:* building a model before the target variable is well-defined, discovering it's broken mid-project.
+
+2. **Data understanding (EDA)** — What does the raw data actually look like, row by row? What's missing, what's the class balance, how many cases per term? *Mistake if skipped:* building features on data that isn't actually understood, missing a skew or gap that invalidates results later.
+
+3. **Splitting strategy** — How to split train/val/test so it respects real-world structure (time ordering across terms, non-independence between the two advocate-sides of the same case)? *Mistake if skipped:* random splitting leaks information across time or across sides of the same case, inflating performance.
+
+4. **Baseline first** — What's the simplest possible model (the "dumb" one from known literature, e.g. justice-question-hostility alone), built and evaluated *before* anything fancier? *Mistake if skipped:* never knowing if the real model earned its added complexity.
+
+5. **Feature engineering** — What features are being added, and could any of them indirectly encode the outcome (leakage)? *Mistake if skipped:* a model that looks great and is actually cheating.
+
+6. **Model choice & fitting** — Given n≈300-500, what model complexity is actually supportable? *Mistake if skipped:* overfitting invisibly, especially with any automated hyperparameter search.
+
+7. **Evaluation metric, chosen before results** — What metric defines success, decided before any numbers are seen? *Mistake if skipped:* unconsciously metric-shopping toward whichever number looks best after the fact.
+
+8. **Validation & uncertainty** — How confident is the result given small n (confidence intervals, bootstrap, cross-validation)? *Mistake if skipped:* reporting a point estimate as if it were a fact rather than a noisy estimate.
+
+9. **Error analysis** — Which specific cases does the model get wrong, and why? *Mistake if skipped:* stopping at a single aggregate number and missing what the model actually learned or failed to learn.
+
+10. **Write-up & honest framing** — Does the conclusion match what the evidence actually supports, including a null/marginal result? *Mistake if skipped:* overclaiming — the single most common portfolio-project failure.
